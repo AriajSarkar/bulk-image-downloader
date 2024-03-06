@@ -1,6 +1,6 @@
-# Bilk Image Downloader
+# Bulk Image Downloader
 
-Bilk Image Downloader is a web application built with Flask (Python) for the backend and React for the frontend. It allows users to input a URL containing images and downloads those images to a specified directory on the server.
+Bulk Image Downloader is a web application built with Flask (Python) for the backend and React for the frontend. It allows users to input a URL containing images and downloads those images to a specified directory on the server.
 
 ## Features
 
