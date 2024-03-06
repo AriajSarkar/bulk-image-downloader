@@ -28,7 +28,7 @@ Make sure you have Python and Node.js installed on your machine.
 1. **Clone the repository:**
 
     ```bash
-    git clone https://github.com/AriajSarkar/bilk-image-downloader.git
+    git clone https://github.com/AriajSarkar/bulk-image-downloader.git
     cd bilk-image-downloader
     ```
 
