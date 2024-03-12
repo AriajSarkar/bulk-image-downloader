@@ -29,7 +29,7 @@ Make sure you have Python and Node.js installed on your machine.
 
     ```bash
     git clone https://github.com/AriajSarkar/bulk-image-downloader.git
-    cd bilk-image-downloader
+    cd bulk-image-downloader
     ```
 
 2. **Install backend dependencies:**
