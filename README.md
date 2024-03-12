@@ -37,6 +37,7 @@ Make sure you have Python and Node.js installed on your machine.
     ```bash
     cd server
     pip install -r requirements.txt
+    python app.py
     ```
 
 3. **Install frontend dependencies:**
