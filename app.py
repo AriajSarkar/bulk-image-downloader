@@ -1,4 +1,3 @@
-from flask import Flask, request, render_template
 import os
 import requests
 from bs4 import BeautifulSoup
@@ -8,21 +7,13 @@ from colorama import Fore, Style, init
 # Initialize colorama
 init()
 
-app = Flask(__name__)
-log_messages = [] # List to store log messages
+log_messages = []  # List to store log messages
 
-@app.route('/', methods=['GET', 'POST'])
-def home():
-    if request.method == 'POST':
-        url = request.form.get('url')
-        path = 'images'
-        download_images(url, path)
-        return render_template('index.html', message="Images downloaded successfully!", log_messages=log_messages)
-    return render_template('index.html')
 
 def download_images(url, path):
     # List of image extensions
-    image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.tiff', '.bmp', '.ico', '.psd', '.ai', '.apng', '.avif', '.jfif', '.pjpeg', '.pjp', '.webp']
+    image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.tiff', '.bmp', '.ico', '.psd', '.ai', '.apng', '.avif',
+                        '.jfif', '.pjpeg', '.pjp', '.webp']
 
     non_image_files = []  # List to store non-image files with 'src' attribute
 
@@ -52,7 +43,9 @@ def download_images(url, path):
             os.makedirs(path)
             log_messages.append(Fore.GREEN + f"Created directory: {path}" + Style.RESET_ALL)
         else:
-            log_messages.append(Fore.YELLOW + f"Directory already exists: {path}. Images will be downloaded into this directory." + Style.RESET_ALL)
+            log_messages.append(
+                Fore.YELLOW + f"Directory already exists: {path}. Images will be downloaded into this directory." +
+                Style.RESET_ALL)
 
         # Download each image
         for i, image in enumerate(images):
@@ -68,20 +61,23 @@ def download_images(url, path):
                 full_image_url = urljoin(url, image_url)
             else:
                 # Skip this image if the URL is not valid
-                log_messages.append(Fore.RED + f"Skipping image {i + 1} due to invalid URL: {image_url}" + Style.RESET_ALL)
+                log_messages.append(
+                    Fore.RED + f"Skipping image {i + 1} due to invalid URL: {image_url}" + Style.RESET_ALL)
                 continue
 
             # Check if the URL is an image by looking at the extension
             if not any(full_image_url.endswith(ext) for ext in image_extensions):
                 non_image_files.append(full_image_url)
-                log_messages.append(Fore.RED + f"Skipping non-image file {i + 1}: {full_image_url}" + Style.RESET_ALL)
+                log_messages.append(
+                    Fore.RED + f"Skipping non-image file {i + 1}: {full_image_url}" + Style.RESET_ALL)
                 continue
 
             # Send a GET request to the image URL
             image_response = requests.get(full_image_url)
             image_response.raise_for_status()  # Raise an exception if the GET request was unsuccessful
 
-            log_messages.append(Fore.GREEN + f"Downloading image {i + 1} from {full_image_url}" + Style.RESET_ALL)
+            log_messages.append(
+                Fore.GREEN + f"Downloading image {i + 1} from {full_image_url}" + Style.RESET_ALL)
 
             # Get the content of the response
             image_content = image_response.content
@@ -97,19 +93,39 @@ def download_images(url, path):
             with open(os.path.join(path, image_name), 'wb') as f:
                 # Write the image content to the file
                 f.write(image_content)
-                log_messages.append(Fore.GREEN + f"{image_name} saved successfully" + Style.RESET_ALL)
+                log_messages.append(
+                    Fore.GREEN + f"{image_name} saved successfully" + Style.RESET_ALL)
 
-        log_messages.append(Fore.GREEN + f"\nDownload completed. {len(non_image_files)} non-image files were skipped." + Style.RESET_ALL)
+        log_messages.append(
+            Fore.GREEN + f"\nDownload completed. {len(non_image_files)} non-image files were skipped." + Style.RESET_ALL)
 
     except requests.exceptions.HTTPError as errh:
-        log_messages.append(Fore.RED + "HTTP Error:",errh + Style.RESET_ALL)
+        log_messages.append(Fore.RED + f"HTTP Error: {errh}" + Style.RESET_ALL)
     except requests.exceptions.ConnectionError as errc:
-        log_messages.append(Fore.RED + "Error Connecting:",errc + Style.RESET_ALL)
+        log_messages.append(Fore.RED + f"Error Connecting: {errc}" + Style.RESET_ALL)
     except requests.exceptions.Timeout as errt:
-        log_messages.append(Fore.RED + "Timeout Error:",errt + Style.RESET_ALL)
+        log_messages.append(Fore.RED + f"Timeout Error: {errt}" + Style.RESET_ALL)
     except requests.exceptions.RequestException as err:
-        log_messages.append(Fore.RED + "Something went wrong with the request:",err + Style.RESET_ALL)
+        log_messages.append(Fore.RED + f"Something went wrong with the request: {err}" + Style.RESET_ALL)
+
+
+def main():
+    while True:
+        try:
+            url = input("Enter the URL (or 'exit' or Ctrl+C to quit): ")
+            if url.lower() == 'exit':
+                break
+
+            path = 'images'
+            download_images(url, path)
+            for message in log_messages:
+                print(message)
+
+        except KeyboardInterrupt:
+            print("\nProgram terminated by user (Ctrl+C).")
+            break
+
 
 # Call the function to download images from a URL and save them to a directory
 if __name__ == '__main__':
-    app.run(debug=True)
+    main()
